@@ -1,0 +1,108 @@
+
+.column-chat-list {
+    flex: 1;
+    min-width: 300px; 
+    border-right: solid 1px var(--border-dark);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-main);
+}
+
+.list-header {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.list-header > input {
+    padding: 5px;
+    margin: 5px;
+    height: 80%;
+    border: none;
+    border-bottom: solid 1px var(--border-dark);
+    background-color: var(--bg-main);
+    font-size: large;
+    font-weight: bold;
+    outline: none;
+}
+
+.chat-items-container {
+    padding: 10px;
+    overflow-y: auto; 
+}
+
+.chat-item {
+    display: flex;
+    height: 70px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0;
+    background-color: var(--bg-white);
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0px 2px 4px -1px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chat-item:hover {
+    background-color: var(--primary-light);
+}
+
+.chat-item.active {
+    background-color: var(--primary-light);
+}
+
+.avatar {
+    flex: 0 0 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar > img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-info .name {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.chat-info .preview {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-notify {
+    flex: 0 0 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.c-notify {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--accent-blue);
+    color: white;
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

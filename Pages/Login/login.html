@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="main-container">
+
+        <div class="login-container " style="display: none;">
+
+            <h4 class="form-title ">Login</h4>
+
+            <form id="loginForm" class="login-form">
+                <div class="login-email-field">
+                    <input type="email" class="login-email-input" id="loginEmail" placeholder="name@example.com">
+                    <label for="loginEmail" class="login-email-label">Email address</label>
+                </div>
+
+                <div class="login-password-field">
+                    <input type="password" class="login-password-input" id="loginPassword" placeholder="Password">
+                    <label for="loginPassword" class="login-password-label">Password</label>
+                </div>
+
+                <button type="submit" class="login-btn">Sign In</button>
+
+                <div class="login-switch">
+                    <small>New here? <a href="#" id="showRegister" class="switch-to-register">Create an
+                            account</a></small>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- REGISTER CONTAINER -->
+        <div class="register-container ">
+
+            <h4 class="form-title">Register</h4>
+
+            <form id="registerForm" class="register-form">
+
+                <div class="first-name-field">
+                    <input type="text" class="register-firstName-input" id="firstName" placeholder="Name">
+                    <label for="firstName" class="first-name-label">First Name</label>
+                </div>
+                <div class="last-name-field">
+                    <input type="text" class="register-lastName-input" id="lastName" placeholder="Name">
+                    <label for="lastName" class="last-name-label">Last Name</label>
+                </div>
+                <div class="register-name-field">
+                    <input type="text" class="register-name-input" id="registerName" placeholder="Name">
+                    <label for="registerName" class="register-name-label">User Name</label>
+                </div>
+
+                <div class="register-email-field">
+                    <input type="email" class="register-email-input" id="registerEmail" placeholder="name@example.com">
+                    <label for="registerEmail" class="register-email-label">Email address</label>
+                </div>
+
+                <div class="register-password-field">
+                    <input type="password" class="register-password-input" id="registerPassword" placeholder="Password">
+                    <label for="registerPassword" class="register-password-label">Password</label>
+                </div>
+                <div class="register-file-field">
+                    <input type="file" class="register-file-input" id="registerFile" placeholder="image"
+                        accept="image/*">
+                    <label for="registerFile" class="register-file-label">Photo</label>
+                </div>
+
+                <button type="submit" class="register-btn">Register</button>
+
+                <div class="register-switch">
+                    <small>Already have an account? <a href="#" id="showLogin" class="switch-to-login">Login
+                            here</a></small>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="login.js"></script>
+</body>
+
+</html>

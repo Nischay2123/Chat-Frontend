@@ -1,0 +1,41 @@
+.main-layout-container {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.column-nav {
+    width: 80px;
+    border-right: solid 1px var(--border-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-dark);
+}
+
+.nav-top {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.nav-btn {
+    background-color: var(--primary-light);
+    height: 50px;
+    width: 50px;
+    border-radius: 20%;
+    border: none;
+    margin: 10px 0;
+    padding: 2px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.05);
+}
+
+.chats-btn {
+    display: none; 
+}

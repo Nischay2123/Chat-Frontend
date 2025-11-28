@@ -1,0 +1,30 @@
+:root {
+    --primary-dark: rgb(75, 75, 159);   
+    --primary-light: rgb(193, 193, 251); 
+    --accent-blue: #007bff;            
+    --accent-hover: #0056b3;
+    
+    --bg-main: #F3F4F6;
+    --bg-chat: #f8fafc;
+    --bg-white: #ffffff;
+    
+    --text-dark: #1f2937;
+    --text-gray: #4b5563;
+    --text-light: #9ca3af;
+    
+    --border-light: #e5e7eb;
+    --border-dark: darkgray;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Added font for better look */
+}

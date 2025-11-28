@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+    <!-- Main Layout Wrapper -->
+    <div class="main-layout-container">
+
+        <!-- COLUMN 1: Sleek Navigation (Sidebar) -->
+        <nav class="column-nav">
+            <div class="nav-top">
+                <button class="nav-btn chats-btn">Chats</button>
+                <button class="nav-btn profile-btn">
+                    Profile
+                </button>
+                <button class="nav-btn add-user-btn">
+                    +
+                </button>
+                <button class="nav-btn create-group-btn">
+                    Create Group
+                </button>
+            </div>
+
+            <div class="nav-bottom">
+                <button class="nav-btn logout-btn">
+                    Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- COLUMN 2: Chat List -->
+        <aside class="column-chat-list">
+            <header class="list-header">
+                <input type="text" class="search-input" placeholder="Chats...">
+            </header>
+
+            <div class="chat-items-container">
+                <!-- Single Chat Item -->
+                <div class="chat-item active">
+                    <div class="avatar"><img src="default-avtar.png" alt="photo"></div>
+                    <div class="chat-info">
+                        <span class="name">User Name</span>
+                        <span class="preview">Last message...</span>
+                    </div>
+                </div>
+                <!-- Repeat chat items as needed -->
+                 <div class="chat-item">
+                    <div class="avatar"><img src="default-avtar.png" alt=""></div>
+                    <div class="chat-info">
+                        <span class="name">Another User</span>
+                        <span class="preview">See you later!</span>
+                    </div>
+                    <div class="chat-notify"><span class="c-notify"></span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- COLUMN 3: Active Chat Conversation -->
+        <main class="column-active-chat">
+            <header class="chat-header">
+                <div class="user-status">
+                    <span class="status-image"><img src="default-avtar.png" alt=""></span>
+                    <span class="status-name">Current Contact</span>
+                </div>
+            </header>
+
+            <div class="messages-area">
+                <p>No messages available</p>
+            </div>
+
+            <footer class="chat-input-area">
+                <input type="text" class="message-input" placeholder="Type a message..." value="">
+                <button class="send-btn">Send</button>
+            </footer>
+        </main>
+
+        <!-- COLUMN 4: User Profile Details -->
+        <aside class="column-profile" style="display: none;">
+            <div class="profile-header">
+                <div class="large-avatar"><img class="profile-image" src="default-avtar.png" alt=""></div>
+                <h2 class="profile-name">Profile Name</h2>
+            </div>
+
+            <div class="profile-sections">
+                <section class="media-section">
+                    <div class="media-grid">
+                        <div class="media-item profile-fullname">Full Name</div>
+                        <div class="media-item profile-email">email</div>
+                    </div>
+                </section>
+            </div>
+        </aside>
+    </div>
+
+
+    <div id="addUserModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"></h3>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <input type="text" id="userSearchInput" class="modal-search-input" placeholder="Search users by name">
+                
+                <ul class="user-search-results">
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>  
+    <div id="addNewGroup" class="modal-overlay">
+        <div id="modal-contant" class="modal-content">
+            <div id="modal-header" class="modal-header">
+                <h3 id="modal-title" class="modal-title"></h3>
+                <button id="close-modal-btn" class="close-modal-btn">&times;</button>
+            </div>
+            
+            <div id="modal-body" class="modal-body">
+                <input type="text" id="newGroupInput" class="modal-search-input" placeholder="Enter Group Name">
+                
+                <ul id="user-search-results" class="user-search-results">
+                    <li></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button id="finalize-group-btn" class="action-btn">Create Group</button>
+            </div>
+        </div>
+    </div>  
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script defer type="module" src="js/newConvo.js"></script>
+    <script defer src="js/logOut.js"></script>
+    <script defer type="module" src="js/createGroup.js"></script>
+</body>
+</html>
