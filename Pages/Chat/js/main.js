@@ -51,35 +51,53 @@ socket.on("connect", async () => {
         }
     }
     
-    await getAllConversations(); 
 
     console.log("Checking all chats for synchronization...");
 
-    for (const chat of allConversations) {
-        if (!chat.lastMessage || !chat.lastMessage.createdAt) continue;
+    if (selectedChatId) {
+        const localMsgs = await getLocalMessages(selectedChatId._id);
+        
+        // 🟢 Added safety check (typeof m._id) to prevent crashes
+        const pendingMsgs = localMsgs.filter(m => 
+            m._id && typeof m._id === 'string' && m._id.startsWith("temp_")
+        );
+        
+        if (pendingMsgs.length > 0) {
+            console.log(`Resending ${pendingMsgs.length} pending messages...`);
+            pendingMsgs.forEach(msg => emitMessageWithAck(msg));
+        }
+    }
+    
+    await getAllConversations(); 
 
-        const localMsgs = await getLocalMessages(chat._id);
-        
-        if (localMsgs.length === 0) {
-            console.log(`Chat ${chat.name} is empty locally. Syncing...`);
-            await loadMessages(chat._id);
-            continue;
-        }
+    console.log("Checking active chat for synchronization...");
 
-        localMsgs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    if (selectedChatId) {
+        const chat = allConversations.find(c => c._id === selectedChatId._id);
 
-        const realLocalMsgs = localMsgs.filter(m => !m._id.startsWith("temp_"));
-        const lastLocalMsg = realLocalMsgs[realLocalMsgs.length - 1];
+        if (!chat || !chat.lastMessage || !chat.lastMessage.createdAt) return;
 
-        if (!lastLocalMsg || lastLocalMsg._id !== chat.lastMessage._id) {
-            console.log(`Syncing ${chat.name || "Chat"} (Server is newer)...`);
-            await loadMessages(chat._id);
-            
-            if (!selectedChatId || selectedChatId._id !== chat._id) {
-                notifyMap.set(chat._id, chat.unreadCount || 0);
-            }
-        }
-    }
+        const localMsgs = await getLocalMessages(chat._id);
+        
+        if (localMsgs.length === 0) {
+            console.log(`Chat ${chat.name} is empty locally. Syncing...`);
+            await loadMessages(chat._id);
+            return;
+        }
+
+        localMsgs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+        const realLocalMsgs = localMsgs.filter(m => !m._id.toString().startsWith("temp_"));
+        const lastLocalMsg = realLocalMsgs[realLocalMsgs.length - 1];
+
+        if (!lastLocalMsg || lastLocalMsg._id !== chat.lastMessage._id) {
+            console.log(`Syncing active chat (Server is newer)...`);
+            await loadMessages(chat._id);
+            
+        } else {
+            console.log("Active chat is already up to date.");
+        }
+    }
     
     renderChatList(allConversations, notifyMap, selectedChatId, currentUser);
 });
@@ -147,7 +165,7 @@ async function loadMessages(conversationId) {
 
     if (localMsgs.length > 0 && isChatOpen) {
         
-        renderMessages(localMsgs, currentUser);
+        renderMessages(localMsgs, currentUser,participants);
     }
     try {
         const response = await axios.get(`${BASE_URL}/api/v1/messages/${conversationId}?limit=20`, {
@@ -363,9 +381,14 @@ if(messageContainer) {
     });
 }
 
-
-function emitMessageWithAck(payload) {
-    if (!socket.connected) return; 
+async function emitMessageWithAck(payload) {
+    if (!socket.connected){
+        console.warn(`🛑 Socket disconnected. Keeping ${payload.tempId} in IndexedDB for background sync.`);
+        
+        await saveMessages([payload]); 
+        appendMessageToUI(payload,currentUser,selectedChatId.participants);
+        return
+    }
 
     const { _id, ...serverPayload } = payload;
 

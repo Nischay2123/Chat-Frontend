@@ -6,7 +6,7 @@ export const profileContainer = document.querySelector(".column-profile");
 export const statusImage = document.querySelector(".status-image img");
 export const statusName = document.querySelector(".status-name");
 
-// import { openSearchModal } from "./seen.js";
+import { openSearchModal } from "./seen.js";
 
 export function renderChatList(conversations, notifyMap, selectedChatId, currentUser) {
     chatContainer.innerHTML = "";
@@ -75,7 +75,9 @@ export function appendMessageToUI(msg, currentUser, participants) {
     const timeVal = new Date(msg.createdAt) ;
     const timeString = timeVal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const isPending = msg._id && msg._id.toString().startsWith("temp_");
-    const statusHTML = (isOutgoing && isPending) ? `<span class="msg-status-icon">🕒</span>` : "";
+    const statusHTML =  (isOutgoing && isPending) ? `<span class="msg-status-icon">🕒</span>` :"";
+                        // (isOutgoing && msg.seen.length==participants.length)?`<span class="msg-status-icon">✔</span>`:
+                        // `<span class="msg-status-icon">✔</span>`;
 
     messageWrapper.innerHTML = `
         ${nameHTML}
@@ -121,6 +123,10 @@ export function prependMessagesToUI(messages , currentUser, participants){
                 <div class="bubble">${msg.text}</div>
                 <span class="timestamp">${timeString}</span>
             `;
+            messageWrapper.addEventListener("click",(e)=>{
+                e.preventDefault();
+                openSearchModal(e,msg);
+            })
             messageContainer.insertBefore(messageWrapper, messageContainer.firstChild);
         })
 

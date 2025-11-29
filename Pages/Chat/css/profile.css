@@ -4,8 +4,10 @@
     flex-direction: column;
     align-items: center;
     padding-top: 40px; 
+    padding-bottom: 20px; 
     border-left: 1px solid var(--border-light);
     background-color: var(--bg-white);
+    height: 100%;
 }
 
 .profile-header {
@@ -64,4 +66,43 @@
 .media-item:hover {
     background-color: var(--bg-main);
     border-color: #d1d5db;
+}
+
+.profile-btns{
+    width: 70%;
+    margin: 20px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: end;
+}
+
+.action-btn-profile {
+    width: 100%;
+    height: 45px;
+    border-radius: 8px; 
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px;
+}
+
+/* Specific style for Upload Button */
+.upload-btn {
+    background-color: #3b82f6; /* Blue */
+    color: white;
+}
+.upload-btn:hover {
+    background-color: #2563eb;
+}
+
+/* Specific style for Logout Button */
+.logout-btn-profile {
+    background-color: #ef4444; /* Red */
+    color: white;
+}
+.logout-btn-profile:hover {
+    background-color: #dc2626;
 }

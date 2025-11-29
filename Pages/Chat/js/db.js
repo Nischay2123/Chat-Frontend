@@ -127,8 +127,22 @@ export async function getLocalConversations() {
         const request = store.getAll();
 
         request.onsuccess = (event) => {
-            resolve(event.target.result || []);
+            const conversations = event.target.result || [];
+            conversations.sort((a, b) => {
+                const dateA = a.lastMessage && a.lastMessage.createdAt 
+                              ? new Date(a.lastMessage.createdAt) 
+                              : new Date(0);
+
+                const dateB = b.lastMessage && b.lastMessage.createdAt 
+                              ? new Date(b.lastMessage.createdAt) 
+                              : new Date(0);
+
+                return dateB - dateA; 
+            });
+
+            resolve(conversations);
         };
+
         request.onerror = (event) => {
             console.log("Fetch Error:", event.target.error);
             reject(event.target.error);

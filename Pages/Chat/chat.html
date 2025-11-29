@@ -40,23 +40,7 @@
             </header>
 
             <div class="chat-items-container">
-                <!-- Single Chat Item -->
-                <div class="chat-item active">
-                    <div class="avatar"><img src="default-avtar.png" alt="photo"></div>
-                    <div class="chat-info">
-                        <span class="name">User Name</span>
-                        <span class="preview">Last message...</span>
-                    </div>
-                </div>
-                <!-- Repeat chat items as needed -->
-                 <div class="chat-item">
-                    <div class="avatar"><img src="default-avtar.png" alt=""></div>
-                    <div class="chat-info">
-                        <span class="name">Another User</span>
-                        <span class="preview">See you later!</span>
-                    </div>
-                    <div class="chat-notify"><span class="c-notify"></span></div>
-                </div>
+                
             </div>
         </aside>
 
@@ -82,7 +66,9 @@
         <!-- COLUMN 4: User Profile Details -->
         <aside class="column-profile" style="display: none;">
             <div class="profile-header">
-                <div class="large-avatar"><img class="profile-image" src="default-avtar.png" alt=""></div>
+                <div class="large-avatar">
+                    <img class="profile-image" src="default-avtar.png" alt="">
+                </div>
                 <h2 class="profile-name">Profile Name</h2>
             </div>
 
@@ -93,6 +79,18 @@
                         <div class="media-item profile-email">email</div>
                     </div>
                 </section>
+            </div>
+
+            <div class="profile-btns" style="display: none;">
+                <input type="file" id="profile-upload-input" style="display: none;" accept="image/*">
+                
+                <button class="action-btn-profile upload-btn" onclick="document.getElementById('profile-upload-input').click()">
+                    Upload Profile Image
+                </button>
+
+                <button class="action-btn-profile logout-btn-profile">
+                    Logout
+                </button>
             </div>
         </aside>
     </div>
@@ -133,6 +131,21 @@
             </div>
         </div>
     </div>  
+
+     <!-- modal for the seen messages -->
+    <div class="modal-overlay" id="seen-modal">
+        <div class="modal-content" id="modal-content-seen">
+            <div class="modal-header" id="modal-header-seen">
+                <h3 class="modal-title" id="modal-title-seen"></h3>
+                <button id="close-modal-btn-seen" class="close-modal-btn">&times;</button>
+            </div>
+            <div id="modal-body-seen" class="modal-body">
+                <ul id="user-seen-results" class="user-search-results">
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
