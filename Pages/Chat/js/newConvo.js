@@ -35,7 +35,6 @@ function closeSearchModal() {
 modalInput.addEventListener('input', (e) => {
     const query = e.target.value.trim();
     
-    // 🟢 Optimization 2: Clear previous timer (Stop API spam)
     clearTimeout(searchTimeout); 
 
     if(query.length === 0){
@@ -43,20 +42,17 @@ modalInput.addEventListener('input', (e) => {
         return;
     }
 
-    // 🟢 Optimization 3: Wait 300ms before calling API
     searchTimeout = setTimeout(async () => {
         try {
             const response = await axios.get(`http://localhost:8000/api/v1/users/?userName=${query}`, { withCredentials: true });
             
             if (response.data && response.data.data) {
                 const currentUserIdStr = currentUser._id.toString();
-                let existingIds = new Set(); // Use Set for faster lookups
+                let existingIds = new Set(); 
                 
-                // 🟢 Optimization 4: Robust ID extraction
                 allConversations.forEach(chat => {
                     if (chat.name === "One-to-One" && chat.participants) {
                         chat.participants.forEach(p => {
-                            // Handle if participant is populated object OR just an ID string
                             const pId = (p._id || p).toString();
                             if(pId !== currentUserIdStr) existingIds.add(pId);
                         });
@@ -65,7 +61,6 @@ modalInput.addEventListener('input', (e) => {
                 
                 newUsers = response.data.data.filter(user => {
                     const userIdStr = user._id.toString();
-                    // Filter out existing chats AND self
                     return !existingIds.has(userIdStr) && userIdStr !== currentUserIdStr;
                 });
                 
@@ -74,7 +69,7 @@ modalInput.addEventListener('input', (e) => {
         } catch (error) {
             console.error("Search Error:", error);
         }
-    }, 300); // 300ms delay
+    }, 300); 
 });
 
 function renderUserList(users) {
@@ -90,7 +85,6 @@ function renderUserList(users) {
         li.className = 'search-item';
         
         const fullName = `${user.firstName} ${user.lastName}`;
-        // 🟢 Optimization 5: Nullish coalescing for safer image fallback
         const avatarSrc = user.photo ?? 'default-avtar.png';
 
         li.innerHTML = `

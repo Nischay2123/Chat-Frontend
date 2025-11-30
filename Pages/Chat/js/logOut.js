@@ -16,6 +16,7 @@ logout.addEventListener("click",async(e)=>{
             console.log("Error while logout: ", response);
             return;
         }
+        window.localStorage.removeItem("user");
         alert("Logged out successfully");
         window.location.href="http://localhost:5500/ChatApplication/Frontend/Pages/Login/login.html";
     } catch (error) {

@@ -33,7 +33,6 @@ finalizeGroupBtn.addEventListener("click", async () => {
         return;
     }
 
-    // 🟢 Optimization 1: UI Feedback (Disable button)
     const originalBtnText = finalizeGroupBtn.innerText;
     finalizeGroupBtn.disabled = true;
     finalizeGroupBtn.innerText = "Creating...";
@@ -50,14 +49,12 @@ finalizeGroupBtn.addEventListener("click", async () => {
         
         if(response.data.success) {
            closeSearchModal();
-           // Refresh list so the new group appears immediately
            await getAllConversations();
         }
     } catch (error) {
         console.error("Group creation failed:", error);
         alert("Failed to create group. Please try again.");
     } finally {
-        // 🟢 Restore button state
         finalizeGroupBtn.disabled = false;
         finalizeGroupBtn.innerText = originalBtnText;
     }
@@ -72,18 +69,15 @@ function openSearchModal(e) {
     
     selectedParticipants = []; 
     
-    // 🟢 Optimization 2: Use a Map to prevent Duplicate Users
     const uniqueUsersMap = new Map();
     const currentUserIdStr = currentUser._id.toString();
 
     allConversations.forEach((chat) => {
         if (chat.name === "One-to-One" && chat.participants) {
             chat.participants.forEach((p) => {
-                // Handle populated object vs raw ID string
                 const pId = (p._id || p).toString();
 
                 if (pId !== currentUserIdStr) {
-                    // Only add if not already in Map (deduplication)
                     if (!uniqueUsersMap.has(pId)) {
                         uniqueUsersMap.set(pId, {
                             firstName: p.firstName,
@@ -98,7 +92,6 @@ function openSearchModal(e) {
         }
     });
 
-    // Convert Map values back to Array
     const uniqueUserList = Array.from(uniqueUsersMap.values());
     
     renderUserList(uniqueUserList);
@@ -120,7 +113,6 @@ function renderUserList(users) {
         return;
     }
 
-    // 🟢 Optimization 3: Use DocumentFragment for performance
     const fragment = document.createDocumentFragment();
 
     users.forEach(participant => {
@@ -129,7 +121,7 @@ function renderUserList(users) {
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.id = `checkbox-${participant._id}`; // Unique ID for label targeting
+        checkbox.id = `checkbox-${participant._id}`; 
         checkbox.value = JSON.stringify(participant);
         
         checkbox.addEventListener("change", (e) => {
@@ -142,7 +134,6 @@ function renderUserList(users) {
             }
         });
 
-        // Nullish coalescing for image
         const avatarSrc = participant.photo ?? 'default-avtar.png';
         const img = document.createElement('img');
         img.src = avatarSrc;
@@ -158,7 +149,6 @@ function renderUserList(users) {
             <span class="search-email">@${participant.userName}</span>
         `;
 
-        // Allow clicking the entire row to toggle checkbox
         li.addEventListener('click', (e) => {
             if (e.target !== checkbox) {
                 checkbox.checked = !checkbox.checked;
