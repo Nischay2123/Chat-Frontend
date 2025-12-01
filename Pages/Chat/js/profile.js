@@ -9,13 +9,25 @@ const fullName = document.querySelector(".profile-fullname");
 const email = document.querySelector(".profile-email");
 const btns = document.querySelector(".profile-btns")
 const logOut = document.querySelector(".logout-btn-profile")
+const backBtn = document.querySelector(".back");
+const chatListcol =document.querySelector(".column-chat-list")
+const messageCol = document.querySelector(".column-active-chat")
 
 
 
 export function targetUserProfile(e,selectedChatId) {
     e.preventDefault(); 
     
-    profile.style.display=profile.style.display == "flex"?"none":"flex";
+    const isMobile = window.matchMedia("(max-width: 425px)").matches;
+    
+    if(isMobile){
+        
+        console.log(messageCol.style.display);
+        
+        if(messageCol.style.display=="")chatListcol.style.display=chatListcol.style.display==="none"?"flex":"none";
+        else messageCol.style.display=messageCol.style.display===""?"flex":"";
+    }
+    profile.style.display=profile.style.display == "flex"?"none":"flex";
     const isCurrentUser =selectedChatId._id==currentUser._id 
     // console.log(isCurrentUser);
     
@@ -36,6 +48,16 @@ export function targetUserProfile(e,selectedChatId) {
     fullName.innerHTML =targetUser.fullName
     email.innerHTML=targetUser.email;
     btns.style.display=isCurrentUser ?"":"none";
+    backBtn.innerHTML=isCurrentUser?"":"⬅️";
+    
+}
+if (backBtn) {
+    backBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        profile.style.display=profile.style.display == "flex"?"none":"flex";
+        messageCol.style.display=messageCol.style.display===""?"flex":"";
+
+    })
 }
 
 logOut.addEventListener("click",async(e)=>{
@@ -116,4 +138,52 @@ if (profileInput) {
             uploadBtn.disabled = false;
         }
     });
+}
+
+axios.interceptors.response.use(
+    (response) => { 
+        return response;
+    }, 
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true; 
+            console.log('🔄 Access Token expired. Attempting refresh...');
+            
+            try {
+                const refreshUrl = `${BASE_URL}/api/v1/users/refresh-token`;
+                
+                await axios.post(refreshUrl, {}, { withCredentials: true });
+                
+                console.log('✅ Refresh successful. Retrying original request.');
+
+                return axios(originalRequest);
+
+            } catch (refreshError) {
+                console.error("❌ Refresh failed. Logging out...", refreshError);
+                window.location.href="/ChatApplication/Frontend/Pages/Login/login.html";
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+const chatBtn = document.querySelector(".chats-btn")
+
+if(chatBtn){
+    chatBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        const activeItem = document.querySelector(".chat-item.active");
+        
+        if (activeItem) {
+            activeItem.classList.remove("active");
+        }
+
+        messageCol.style.display="";
+        chatListcol.style.display="flex";
+        profile.style.display="none";
+        // selectedChatId=null;
+    })
 }

@@ -8,7 +8,8 @@ import {
     updateChatHeader,
     scrollToBottom,
     messageContainer,
-    prependMessagesToUI
+    prependMessagesToUI,
+    syncReadReceipts
 } from './ui.js';
 
 import { 
@@ -48,54 +49,43 @@ document.addEventListener("DOMContentLoaded", async () => {
 socket.on("connect", async () => {
     console.log("✅ Connection restored! Starting Background Sync...");
 
-    if (selectedChatId) {
-        const localMsgs = await getLocalMessages(selectedChatId._id);
-        
-        const pendingMsgs = localMsgs.filter(m => 
-            m._id && m._id.startsWith("temp_")
-        );
-        
-        if (pendingMsgs.length > 0) {
-            console.log(`Resending ${pendingMsgs.length} pending messages...`);
-            pendingMsgs.forEach(msg => emitMessageWithAck(msg));
-        }
-    }
-    
     await getAllConversations(); 
 
-    console.log("Checking active chat for synchronization...");
+    if (!selectedChatId) return;
 
-    if (selectedChatId) {
-        const chat = allConversations.find(c => c._id === selectedChatId._id);
+    const currentChat = allConversations.find(c => c._id === selectedChatId._id);
+    if (!currentChat) return; 
 
-        if (!chat || !chat.lastMessage || !chat.lastMessage.createdAt) return;
+    const localMsgs = await getLocalMessages(currentChat._id);
+    
+    const pendingMsgs = localMsgs.filter(m => m._id && m._id.startsWith("temp_"));
+    
+    if (pendingMsgs.length > 0) {
+        console.log(`Resending ${pendingMsgs.length} pending messages...`);
+        pendingMsgs.forEach(msg => emitMessageWithAck(msg));
+    }
 
-        const localMsgs = await getLocalMessages(chat._id);
-        
-        if (localMsgs.length === 0) {
-            console.log(`Chat ${chat.name} is empty locally. Syncing...`);
-            await loadMessages(chat._id);
-            return;
-        }
+    const realLocalMsgs = localMsgs
+        .filter(m => !m._id.toString().startsWith("temp_"))
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        localMsgs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const lastLocalMsg = realLocalMsgs[realLocalMsgs.length - 1];
+    const serverLastMsgId = currentChat.lastMessage?._id || currentChat.lastMessage;
 
-        const realLocalMsgs = localMsgs.filter(m => !m._id.toString().startsWith("temp_"));
-        const lastLocalMsg = realLocalMsgs[realLocalMsgs.length - 1];
-
-        if (!lastLocalMsg || lastLocalMsg._id !== chat.lastMessage._id) {
+    if (serverLastMsgId) {
+        if (!lastLocalMsg || lastLocalMsg._id !== serverLastMsgId) {
             console.log(`Syncing active chat (Server is newer)...`);
-            await loadMessages(chat._id);
-            
+            await loadMessages(currentChat._id);
         } else {
             console.log("Active chat is already up to date.");
         }
     }
-    
+
+    syncReadReceipts(currentChat._id);
 });
 
 socket.on("NEW_MESSAGE", ({ message }) => {
-    const senderId =  message.sender;
+    const senderId =  message.sender.toString();
     if (senderId.toString() === currentUser._id.toString()) return; 
     
     const chatObj = allConversations.find(c => c._id === message.conversationId);
@@ -138,7 +128,14 @@ socket.on("MESSAGE_SEEN", ({ messageId, userId, name, seenAt }) => {
 
 chatContainer.addEventListener("click", async (e) => {
     targetUserProfileCleanUp();
+    document.querySelector(".no-chat-placeholder").style.display="none";
+    document.querySelector(".column-active-chat").style.display="flex";
+    const isMobile = window.matchMedia("(max-width: 425px)").matches;
 
+    if(isMobile){
+        document.querySelector(".column-active-chat").style.display="flex";
+        document.querySelector(".column-chat-list ").style.display="none";
+    }
     const item = e.target.closest(".chat-item");
     if (!item) return;
     // console.log(item);
@@ -457,3 +454,33 @@ function markMessagesAsSeenOptimistically(messages) {
         return msg;
     });
 }
+
+axios.interceptors.response.use(
+    (response) => { 
+        return response;
+    }, 
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true; 
+            console.log('🔄 Access Token expired. Attempting refresh...');
+            
+            try {
+                const refreshUrl = `${BASE_URL}/api/v1/users/refresh-token`;
+                
+                await axios.post(refreshUrl, {}, { withCredentials: true });
+                
+                console.log('✅ Refresh successful. Retrying original request.');
+
+                return axios(originalRequest);
+
+            } catch (refreshError) {
+                console.error("❌ Refresh failed. Logging out...", refreshError);
+                window.location.href="/ChatApplication/Frontend/Pages/Login/login.html";
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+);

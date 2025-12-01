@@ -158,3 +158,32 @@
 .message-wrapper.failed .msg-status-icon::after {
     content: " ↻ Retry"; 
 }
+.no-chat-placeholder {
+    flex: 2; 
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-chat);
+    position: relative;
+    min-width: 400px;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-content h3 {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+@media (max-width: 425px) {
+
+    .column-active-chat {
+        display: none;
+        min-width: 0; 
+        flex: 1; 
+    }
+
+    .no-chat-placeholder{
+        display: none;
+    }
+}

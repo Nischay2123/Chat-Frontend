@@ -35,6 +35,7 @@ const userNameInput = document.getElementById('registerName');
 const emailInputRegister = document.getElementById('registerEmail');
 const passwordInputRegister = document.getElementById('registerPassword');
 const registerFileInput = document.getElementById('registerFile');
+const registerBtn = document.querySelector(".register-btn")
 
 registerForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -49,7 +50,9 @@ registerForm.addEventListener('submit', async (event) => {
     if (registerFileInput.files.length > 0) {
         formData.append('file', registerFileInput.files[0]);
     }
-
+    const orginalText = registerBtn.innerHTML;
+    registerBtn.disabled = true;
+    registerBtn.innerHTML ="Registering...";
     const apiEndpoint = "http://localhost:8000/api/v1/users/register";
 
     try {
@@ -67,6 +70,9 @@ registerForm.addEventListener('submit', async (event) => {
     } catch (error) {
         console.error("Registration failed:", error.response ? error.response.data : error.message);
         alert("Registration failed: " + (error.response?.data?.message || error.message));
+    }finally{
+        registerBtn.disabled = false;
+        registerBtn.innerHTML =orginalText;
     }
 });
 

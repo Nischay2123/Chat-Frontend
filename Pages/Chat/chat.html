@@ -26,11 +26,7 @@
                 </button>
             </div>
 
-            <div class="nav-bottom">
-                <button class="nav-btn logout-btn">
-                    Logout
-                </button>
-            </div>
+            
         </nav>
 
         <!-- COLUMN 2: Chat List -->
@@ -45,7 +41,14 @@
         </aside>
 
         <!-- COLUMN 3: Active Chat Conversation -->
-        <main class="column-active-chat">
+         <div class="no-chat-placeholder">
+            <div class="placeholder-content">
+                <img src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png" alt="No Chat" style="width: 80px; opacity: 0.5;">
+                <h3>Select a conversation</h3>
+                <p>Choose a chat from the left list to start messaging.</p>
+            </div>
+        </div>
+        <main class="column-active-chat" style="display: none;" >
             <header class="chat-header">
                 <div class="user-status">
                     <span class="status-image"><img src="default-avtar.png" alt=""></span>
@@ -66,6 +69,9 @@
         <!-- COLUMN 4: User Profile Details -->
         <aside class="column-profile" style="display: none;">
             <div class="profile-header">
+                <div class="back-btn">
+                    <button class="back"></button>
+                </div>
                 <div class="large-avatar">
                     <img class="profile-image" src="default-avtar.png" alt="">
                 </div>
@@ -152,7 +158,6 @@
 
     <script type="module" src="js/main.js"></script>
     <script defer type="module" src="js/newConvo.js"></script>
-    <script defer src="js/logOut.js"></script>
     <script defer type="module" src="js/createGroup.js"></script>
 </body>
 </html>

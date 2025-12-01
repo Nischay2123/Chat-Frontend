@@ -6,6 +6,7 @@ export const profileContainer = document.querySelector(".column-profile");
 export const statusImage = document.querySelector(".status-image img");
 export const statusName = document.querySelector(".status-name");
 
+import { currentUser } from "./main.js";
 import { openSearchModal } from "./seen.js";
 
 export function renderChatList(conversations, notifyMap, selectedChatId, currentUser) {
@@ -94,7 +95,21 @@ export function renderMessages(messages, currentUser,participants) {
     messages.forEach(msg => appendMessageToUI(msg, currentUser,participants));
     scrollToBottom();
 }
+if (messageContainer) {
+    messageContainer.addEventListener("click", (e) => {
+        const wrapper = e.target.closest(".message-wrapper");
+        
+        if (!wrapper) return;
 
+        e.preventDefault();
+
+        const realId = wrapper.getAttribute("data-id");
+        
+        const msgObj = { _id: realId };
+
+        openSearchModal(e, msgObj);
+    });
+}
 export function appendMessageToUI(msg, currentUser, participants) {
     const senderId =  msg.sender; 
     const isOutgoing = senderId === currentUser._id;
@@ -128,19 +143,7 @@ export function appendMessageToUI(msg, currentUser, participants) {
         <span class="timestamp">${timeString}</span>
     `;
     messageContainer.appendChild(messageWrapper);
-    messageContainer.addEventListener("click", (e) => {
-        const wrapper = e.target.closest(".message-wrapper");
-        
-        if (!wrapper) return;
-
-        e.preventDefault();
-
-        const realId = wrapper.getAttribute("data-id");
-        
-        const msgObj = { _id: realId };
-
-        openSearchModal(e, msgObj);
-    });
+    
     scrollToBottom();
 }
 
@@ -148,7 +151,7 @@ export function prependMessagesToUI(messages , currentUser, participants){
         const oldHeight = messageContainer.scrollHeight;
         const currentScroll = messageContainer.scrollTop;
 
-        messages.forEach(msg =>{
+        [...messages].reverse().forEach(msg =>{
             const senderId = msg.sender._id || msg.sender; 
             const isOutgoing = senderId === currentUser._id;
             let nameHTML = "";
@@ -172,10 +175,6 @@ export function prependMessagesToUI(messages , currentUser, participants){
                 <div class="bubble">${msg.text}</div>
                 <span class="timestamp">${timeString}</span>
             `;
-            messageWrapper.addEventListener("click",(e)=>{
-                e.preventDefault();
-                openSearchModal(e,msg);
-            })
             messageContainer.insertBefore(messageWrapper, messageContainer.firstChild);
         })
 
@@ -218,3 +217,36 @@ export function getTargetUser(chat, currentUser) {
         email: other.email
     };
 }
+
+export async function syncReadReceipts(conversationId) {
+    const localMsgs = await getLocalMessages(conversationId);
+    
+    const unreadMsgs = localMsgs.filter(msg => {
+        const isMe = msg.sender._id 
+            ? msg.sender._id.toString() === currentUser._id.toString()
+            : msg.sender.toString() === currentUser._id.toString();
+
+        if (isMe) return false; 
+
+        const seenList = msg.seen || [];
+        const foundEntry = seenList.find(u => {
+            const id = u.userId; 
+            return id.toString() === currentUser._id.toString();
+        });
+
+        const haveISeenIt = !!foundEntry;
+        return !haveISeenIt
+    });
+
+    if (unreadMsgs.length === 0) return;
+
+    console.log(`sending read receipts for ${unreadMsgs.length} messages...`);
+
+    unreadMsgs.forEach(msg => {
+        socket.emit("MESSAGE_SEEN", { 
+            conversationId: conversationId, 
+            messageId: msg._id 
+        });
+    });
+}
+

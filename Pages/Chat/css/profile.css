@@ -18,6 +18,19 @@
     margin-bottom: 30px; 
 }
 
+.back-btn{
+    height: 100px;
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    align-items: start;
+}
+.back{
+    border-style: none;
+    background-color: transparent;
+    margin: 10px;
+    font-size: xx-large;
+}
 .large-avatar {
     height: 120px; 
     width: 120px;
@@ -105,4 +118,15 @@
 }
 .logout-btn-profile:hover {
     background-color: #dc2626;
+}
+
+
+
+
+@media (max-width: 425px) {
+
+    .column-profile {
+        display: none;
+        width: 100%; 
+    }
 }

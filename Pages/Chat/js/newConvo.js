@@ -116,3 +116,33 @@ async function createConvo(user){
         console.error('Conversation creation failed:', error.message);
     }
 }
+
+axios.interceptors.response.use(
+    (response) => { 
+        return response;
+    }, 
+    async (error) => {
+        const originalRequest = error.config;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true; 
+            console.log('🔄 Access Token expired. Attempting refresh...');
+            
+            try {
+                const refreshUrl = `${BASE_URL}/api/v1/users/refresh-token`;
+                
+                await axios.post(refreshUrl, {}, { withCredentials: true });
+                
+                console.log('✅ Refresh successful. Retrying original request.');
+
+                return axios(originalRequest);
+
+            } catch (refreshError) {
+                console.error("❌ Refresh failed. Logging out...", refreshError);
+                window.location.href="/ChatApplication/Frontend/Pages/Login/login.html";
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
